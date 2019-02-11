@@ -1,0 +1,10 @@
+Cours laravel Tartifly :
+
+VirtualBox/Vagrant
+Installer laravel HomeStead (doc sur le site)
+
+utiliser sites:
+ - map : adresse.site
+   to : /repertoire/projet/public
+   
+rajouter l'adresse dans /etc/hosts
