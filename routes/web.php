@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -51,14 +52,29 @@ Route::get('/tours', function () {
     return view('tours');
 });
 
-Route::get('/voyages', function () {
-    return view('voyages');
+Route::get('/voyages', "VoyageController@index");
+
+Route::get('/voyage/{id}', "VoyageController@show");
+
+
+Route::group(['prefix'=>'admin'],function () {
+    Route::get('/', "AdminController@index")->middleware('admin');
+
+    Route::get('voyages/add', "AdminController@create")->middleware('admin');
+    Route::post('voyages/add', "AdminController@store")->middleware('admin');
+
+    Route::get('voyages/edit/{id}', "AdminController@edit")->middleware('admin');
+    Route::put('voyages/update/{id}', "AdminController@update")->middleware('admin');
+
+    Route::get('voyages/delete/{id}', "AdminController@delete")->middleware('admin');
+    Route::delete('voyages/delete/{id}', "AdminController@destroy")->middleware('admin');
+
 });
 
-Route::get('/voyage', function () {
-    return view('voyage');
-});
 
-Route::get('/admin', function ($id) {
-    return "administration".$id;
-});
+//alternative routes
+
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

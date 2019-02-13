@@ -8,3 +8,131 @@ utiliser sites:
    to : /repertoire/projet/public
    
 rajouter l'adresse dans /etc/hosts
+
+? : transforme une Route en optionnelle
+Routes::get({})->where() : conditions
+Routes::get({})->name('') : nomme la route
+
+Routes::group(['prefix'=>'admin'],function(){
+  Routes::get({})
+  Routes::get({})
+}) : groupe de routes (contient les routes correspondant à admin)
+
+commande "artisan route:list" redonne toutes les routes écrites
+commande "artisan make:controller PostController" crée un contrôlleur 
+  --model=Post crée un contrôlleur de type Model (pour la BDD)
+  --resource crée un contrôlleur avec des fonctions de crud
+
+ne pas oublier de modifier le .env
+
+blade directives :
+@foreach ... @endforeach
+{{$var}} {{'chaine'}} {{time()}}
+
+artisan make:migration nomDuFichier :
+  create_NomDeLaTable_table
+  add_title_to_posts_table=posts
+  (les noms des tables sont au pluriel)
+lancer une migration : artisan migrate
+artisan migrate:rollback : ctrl+Z d'une migration
+artisan migrate:reset : reset une migration
+artisan migrate:status : 
+
+réutiliser une migration pour modifier une table (ne pas créer à la main ou copier/coller)
+
+Schema de migration : voir la doc sur laravel
+
+        Schema::create('users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->integer('role')->default('5');
+        });
+
+artisan make:factory VoyafeFactory --model=Voyage
+artisan make:seeder VoyafeTableSeeder (artisan db:seed)
+
+remplir des données manuellement en base : artisan tinker
+$voyage = new Voyage
+$voyage->label = "voyage2"
+$voyage->label = "très beau voyage"
+$voyage->save()
+
+Récap :
+
+créer une migration (ou une table)
+créer un modèle (singulier pas besoin de le remplir)
+créer une Factory (singulier et lier au modèle avec un 'use' et la classe dans define)
+créer un seeder (pluriel et appeler la factory, le nombre et ->action, comme create)
+spécifier le seeder dans le DatabaseSeeder call()
+
+artisan make:migration create_NomDeLaTable_table (remplir)
+artian migrate
+artisan make:model NomDuModele
+artisan make:factory NomDuComposantFactory (--model=Composant pour créer le modèle avec, et bien rajouter Factory dans la commande)
+artisan make:seeder ComposantTableSeeder (et artisan db:seed)
+
+use Validator
+$validator = Validator::make($request->all(),[
+  'NOM DU CHAMP' => 'REGLES DE VALIDATION SEPAREES PAR DES |',
+  'label' => 'required|min:10'
+]);
+
+if($validator->fails()) {
+  return back()->withErrors($validator)->withInput();
+} else {
+  return redirect()->route('route')->withNomVariable('message')
+}
+
+dans le blade :
+@if($errors->has('label'))
+  {{ $errors->first('label')}}
+@else
+  {{ session('nomVariable') }}
+@endif
+
+pour rappeler les inputs withInputs(): {{old('label')}}
+
+
+ne pas oublier :
+  @csrf pour les formulaires (token de protection)
+  @method('METHOD') (get,post,put,delete,etc)
+
+pour les traductions :
+  ressources/lang/tagDeLangue
+    typeDeMessage.php :
+      <?php
+        return [
+          'message' => 'traduction.',
+          'message' => [
+            'parametre' => 'traduction.'
+          ]
+        ]
+  validation.min.string sera dans validation.php : 
+    'min' => ['string' => ':attribute doit ontenir :min caractères.']
+
+
+artisan make:auth (nécessite de garder l'ancien model User)
+  crée une page /home pour s'authentifier
+  les tags @auth et @guest permettent de différencier les users connectés
+  @auth
+    conditions
+  @else
+    autre
+  @endauth
+
+artisan make:middleware Admin : crée une double vérification des routes
+  Http\middleware Admin :
+    if(Auth::check()) {
+      $user = Auth::user();
+      if($user->role === 1) {
+        return $next($request);
+      }
+    }
+    abort(403);
+ajouter au Http\Kernel : routemiddlewares:
+  'admin' => \App\Http\Middleware\Admin::class,
+
+maintenant, les routes peuvent êtres assignées de ce middleware :
+  Route::get('/admin',function(){...})->middleware('admin');
