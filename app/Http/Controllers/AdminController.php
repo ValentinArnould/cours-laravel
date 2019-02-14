@@ -132,4 +132,8 @@ class AdminController extends Controller
         return redirect('/admin');
         
     }
+
+    public function volAdd() {
+
+    }
 }

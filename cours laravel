@@ -53,7 +53,7 @@ Schema de migration : voir la doc sur laravel
 artisan make:factory VoyafeFactory --model=Voyage
 artisan make:seeder VoyafeTableSeeder (artisan db:seed)
 
-remplir des données manuellement en base : artisan tinker
+remplir des données manuellement en base : artisan tinker (permet de faire des commandes du Controller)
 $voyage = new Voyage
 $voyage->label = "voyage2"
 $voyage->label = "très beau voyage"
@@ -136,3 +136,24 @@ ajouter au Http\Kernel : routemiddlewares:
 
 maintenant, les routes peuvent êtres assignées de ce middleware :
   Route::get('/admin',function(){...})->middleware('admin');
+
+
+Schema de migration :
+
+  $table->foreign('nomDeCle')->references('laCleEtrangere')->on('laTableEtrangere')
+  $table->foreign('nomDeCle')->references('laCleEtrangere')->on('laTableEtrangere')->onDelete('cascade') (si plusieurs)
+
+Model (créer une méthode contenant):
+  return belongsTo('Http\ModelContenantUn')
+  return belongsToMany('ModelContenantPlusieurs')
+  return hasOne('Http\ModeleAppartenant')
+  return hasMany('Http\ModeleAppartenantMultiple')
+
+Controller :
+  $model->function()->($model2)
+  $model->function()->associate($model2)
+  $model->function()->associate($model2)->save()
+
+  $model->function()->attach[1,2,3]
+  $model->function()->detach[1]
+  $model->function()->sync[1]
